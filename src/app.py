@@ -19,7 +19,7 @@ def sum():
     except ValueError:
         return "input invalid"
     
-    return str(num1 / num2)
+    return str(num1 - num2)
 
 
 # main driver function
