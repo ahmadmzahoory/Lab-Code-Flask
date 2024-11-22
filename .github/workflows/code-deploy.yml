@@ -34,9 +34,9 @@ jobs:
 
     # Step 4: Upload your app to an S3 bucket (if needed)
     # Optional: If using S3 to store your deployment package
-    - name: Upload to S3
-      run: |
-        aws s3 cp ./path/to/your/package.zip s3://${{ secrets.AWS_DEPLOYMENT_BUCKET }}/path/to/deployment/package.zip
+    #- name: Upload to S3
+    #  run: |
+    #    aws s3 cp ./path/to/your/package.zip s3://${{ secrets.AWS_DEPLOYMENT_BUCKET }}/path/to/deployment/package.zip
 
     # Step 5: Deploy to AWS CodeDeploy
     - name: Deploy to AWS CodeDeploy
