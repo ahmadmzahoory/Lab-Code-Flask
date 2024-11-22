@@ -1,0 +1,40 @@
+version: 0.0
+os: linux
+files:
+ - source: /src
+   destination: /app
+ - source: requirements.txt
+   destination: /app
+permissions:
+  - object: /app/app.py
+    owner: ec2-user
+    mode: 644
+    type:
+      - file
+  - object: /app/requirements.txt
+    owner: ec2-user
+    mode: 644
+    type:
+      - file
+# The "hooks" section defines the scripts to be run on each Lifecycle event.
+# The hook events are run in the following order: "BeforeInstall", "ApplicationStop", "ApplicationStart", "ValidateService"
+hooks:
+  # Prior to installation steps, run the following actions.
+  AfterInstall:
+    # The location for the "install_docker.sh" script to install Docker and docker-compose.
+    - location: scripts/install.sh
+      # Run the CodeDploy agent with root permissions.
+      runas: root
+
+  # Run the lifecycle event to stop the application via the defined script.
+  ApplicationStop:
+    - location: scripts/stop.sh
+      timeout: 2000
+      runas: root
+      ignoreApplicationStopFailures: true
+
+  # Run the lifecycle event to start the application via the defined script.
+  ApplicationStart:
+    - location: scripts/start.sh
+      timeout: 3600
+      runas: root
