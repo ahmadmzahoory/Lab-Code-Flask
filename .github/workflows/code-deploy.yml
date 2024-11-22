@@ -1,0 +1,48 @@
+name: Deploy to AWS CodeDeploy
+
+on:
+  push:
+    branches:
+      - main  # Trigger deployment on push to the main branch
+  pull_request:
+    branches:
+      - main  # Optional: Trigger deployment when PR is merged to main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    # Step 1: Checkout the code
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    # Step 2: Set up AWS CLI
+    - name: Set up AWS CLI
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ${{ secrets.AWS_REGION }}
+
+    # Step 3: Create a deployment package (if necessary)
+    # Optional: If you need to build your code or package it for deployment, add steps here.
+    # For example, if your app is a Node.js app:
+    # - name: Install dependencies
+    #   run: |
+    #     npm install
+
+    # Step 4: Upload your app to an S3 bucket (if needed)
+    # Optional: If using S3 to store your deployment package
+    - name: Upload to S3
+      run: |
+        aws s3 cp ./path/to/your/package.zip s3://${{ secrets.AWS_DEPLOYMENT_BUCKET }}/path/to/deployment/package.zip
+
+    # Step 5: Deploy to AWS CodeDeploy
+    - name: Deploy to AWS CodeDeploy
+      run: |
+        aws deploy create-deployment \
+          --application-name ${{ secrets.APPLICATION_NAME }} \
+          --deployment-group ${{ secrets.DEPLOYMENT_GROUP }} \
+          --revision revisionType=S3, S3Location={bucket=${{ secrets.AWS_DEPLOYMENT_BUCKET }},key=path/to/deployment/package.zip,bundleType=zip} \
+          --description "GitHub Action Deployment"
